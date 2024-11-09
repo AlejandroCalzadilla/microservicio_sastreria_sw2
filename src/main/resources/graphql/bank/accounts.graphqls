@@ -1,0 +1,280 @@
+directive @public on FIELD_DEFINITION
+
+type Query {
+    login(email: String!, password: String!): AuthPayload @public
+
+
+
+    findAllCustomers: [Customer]
+    findCustomerById(id: ID!): Customer
+
+
+    findAllRawMaterials(limit: Int, offset: Int): PaginatedRawMaterials!
+    findRawMaterialById(id: ID!): RawMaterial
+
+
+    findAllStore:[Store]
+    findStoreById(id: ID!): Store
+
+
+    findAllNotes(limit: Int, offset: Int): PaginatedNotes!
+    findNoteById(id: ID!): Note
+
+    #findAllDetailNotes: [DetailNote]
+    #findDetailNoteById(id: ID!): DetailNote
+
+    findAllInventories: [Inventory]
+    findInventoryById(id: ID!): Inventory
+
+
+
+    findAllAdjustments: [Adjustment]
+    findAdjustmentById(id: ID!): Adjustment
+
+    getAllVestimentas: [Vestimenta]
+    getVestimentaById(id:ID):Vestimenta
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
+
+
+
+type AuthPayload {
+    token: String
+    user: User
+}
+
+type User {
+    id: ID!
+    username: String!
+    email: String
+}
+
+
+
+
+
+type PaginatedRawMaterials {
+    items: [RawMaterial]
+    total: Int
+}
+
+type PaginatedNotes {
+    items: [Note]
+    total: Int
+}
+
+type PaginatedStore {
+    items: [Store]
+    total: Int
+}
+
+
+
+
+type RawMaterial {
+    id: ID
+    name: String
+    unit: String
+}
+
+type Store {
+    id: ID
+    name: String
+    address: String
+}
+
+type Customer {
+    id: ID
+    firstName: String
+    lastName: String
+    ci: String
+    birthDate: String
+    sex: String
+    telephones: [Telephone]
+}
+
+type Telephone {
+    number: String
+    type: String
+}
+
+
+type DetailNote {
+    id: ID
+    quantity: Int
+    price: Float
+    rawMaterialId: ID!
+}
+
+
+
+type Note {
+    id: ID
+    date: String
+    type: String
+    totalAmount: Float
+    detailNotes: [DetailNote]
+    storeId:ID!
+}
+
+
+
+type Inventory {
+    id: ID
+    quantity: Int
+    rawMaterialId: ID!
+    storeId: ID!
+}
+
+
+type Adjustment {
+    id: ID
+    date: String
+    new_value: String
+}
+
+
+
+input DetailNoteInput {
+    quantity: Int
+    price: Float
+    rawMaterialId: ID!
+}
+
+
+input TelephoneInput {
+    number: String
+    type: String
+}
+
+
+
+
+#vestimenta
+type Vestimenta {
+    id: ID
+    nombre: String
+    genero: String
+    unidadVestimenta: UnidadVestimenta # Relación 1 a 1 o * con UnidadVestimenta
+    medida: Medida # Relación * a * con Medida
+}
+
+type UnidadVestimenta {
+    id: ID
+    estado: Boolean
+    medidaVestimenta: MedidaVestimenta # Relación de composición con MedidaVestimenta
+}
+
+type Medida {
+    id: ID
+    nombre: String
+    medidaVestimenta: MedidaVestimenta # Relación 1 a 1 o * con MedidaVestimenta
+}
+
+type MedidaVestimenta {
+    id: ID
+    valor: Float
+    cambio: Cambio # Relación 1 a 0 o 1 con Cambio
+}
+
+type Cambio {
+    id: ID
+    fecha: String
+    nuevo_valor: Float
+}
+
+input UnidadVestimentaInput {
+    id: ID
+    estado: Boolean
+    medidaVestimenta: MedidaVestimentaInput # Relación de composición con MedidaVestimenta
+}
+
+
+input MedidaVestimentaInput {
+    id: ID
+    valor: Float
+    cambio: CambioInput # Relación 1 a 0 o 1 con Cambio
+}
+
+input MedidaInput {
+    id: ID
+    nombre: String
+    medidaVestimenta: MedidaVestimentaInput # Relación 1 a 1 o * con MedidaVestimenta
+
+}
+
+input CambioInput {
+    id: ID
+    fecha: String
+    nuevo_valor: Float
+}
+
+input VestimentaInput {
+    id: ID
+    nombre: String
+    genero: String
+    unidadVestimentas: UnidadVestimentaInput # Cambiado a un arreglo
+    medidas: MedidaInput # Cambiado a un arreglo
+}
+
+
+
+
+
+
+type Mutation {
+
+
+
+    createStore(name: String!, address: String!): Store
+    updateStore(id: ID!, name: String, address: String): Store
+    deleteStore(id: ID!): String
+
+
+
+    createCustomer(firstName: String!, lastName: String!, ci: String!, birthDate: String!, sex: String!, telephones: [TelephoneInput]!): Customer
+    updateCustomer(id: ID!, firstName: String, lastName: String, ci: String, birthDate: String, sex: String, telephones: [TelephoneInput]): Customer
+    deleteCustomer(id: ID!): String
+
+
+
+    createRawMaterial(name: String!, unit: String!): RawMaterial
+    updateRawMaterial(id:ID!,name: String, unit: String): RawMaterial
+    deleteRawMaterial(id: ID!): String
+
+
+
+
+
+    createNote(date: String!, type: String!, totalAmount: Float!, detailNotes: [DetailNoteInput]!, storeId: ID!): Note
+    updateNote(id: ID!, date: String, type: String, totalAmount: Float, detailNotes: [DetailNoteInput], storeId: ID): Note
+    deleteNote(id: ID!): String
+
+
+
+    createInventory(quantity: Int!, rawMaterialId: ID!, storeId: ID!): Inventory
+    updateInventory(id: ID!, quantity: Int, rawMaterialId: ID, storeId: ID): Inventory
+    deleteInventory(id: ID!): String
+
+    register(username: String!, password: String!): String
+
+
+    createAdjustment(date: String!, new_value: String!): Adjustment
+    updateAdjustment(id: ID!, date: String, new_value: String): Adjustment
+    deleteAdjustment(id: ID!): String
+
+    createVestimenta(nombre: String, genero: String, unidadVestimenta: UnidadVestimentaInput, medida: MedidaInput): Vestimenta
+
+}
