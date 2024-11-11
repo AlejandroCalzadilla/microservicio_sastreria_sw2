@@ -37,10 +37,8 @@ public class StoreController {
     // Query para obtener todos los Almacenes
 
     @QueryMapping
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public List<Store> findAllStore() {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public List<Store> findAllStore() {
         return storeRepository.findAll();
     }
 

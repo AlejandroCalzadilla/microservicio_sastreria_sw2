@@ -26,19 +26,19 @@ public class RequestHeaderInterceptor implements WebGraphQlInterceptor {
 
     @Override
     public Mono<WebGraphQlResponse> intercept(WebGraphQlRequest request, Chain chain) {
-        if (request.getDocument().contains("query") && request.getDocument().contains("login")) {
+        if (request.getDocument().contains("query") && (request.getDocument().contains("login") || request.getDocument().contains("register"))) {
             return chain.next(request);
-        }else{
+        } else {
             String bearerToken = request.getHeaders().getFirst("Authorization");
 
             log.debug("Authorization Header: {}", bearerToken);
             if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
                 if (jwtUtils.validateJwtToken(bearerToken)) {
                     return chain.next(request);
-                }else{
+                } else {
                     return Mono.error(new RuntimeException("Invalid credentials"));
                 }
-            }else{
+            } else {
                 return Mono.error(new RuntimeException("Invalid credentials"));
             }
         }

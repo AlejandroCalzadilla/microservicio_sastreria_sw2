@@ -1,7 +1,7 @@
 directive @public on FIELD_DEFINITION
 
 type Query {
-    login(email: String!, password: String!): AuthPayload @public
+    login(email: String!, password: String!): AuthPayload
 
 
 
@@ -58,9 +58,9 @@ type AuthPayload {
 type User {
     id: ID!
     username: String!
-    email: String
+    email: String!
+    password: String!
 }
-
 
 
 
@@ -268,7 +268,7 @@ type Mutation {
     updateInventory(id: ID!, quantity: Int, rawMaterialId: ID, storeId: ID): Inventory
     deleteInventory(id: ID!): String
 
-    register(username: String!, password: String!): String
+    register(username: String!, email: String!, password: String!): User
 
 
     createAdjustment(date: String!, new_value: String!): Adjustment
