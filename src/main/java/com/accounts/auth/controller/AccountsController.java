@@ -4,7 +4,7 @@ import com.accounts.auth.config.JwtUtils;
 import com.accounts.auth.domain.AuthPayload;
 import com.accounts.auth.domain.User;
 import com.accounts.auth.domain.UserRepository;
-import com.accounts.service.BankService;
+
 import graphql.GraphQLError;
 import graphql.schema.DataFetchingEnvironment;
 import lombok.NonNull;
@@ -25,8 +25,7 @@ import java.util.Optional;
 @Controller
 @Slf4j
 public class AccountsController {
-    @Autowired
-    private BankService bankService;
+
 
     @Value("${app.jwt.secret}")
     private String jwtSecret;
