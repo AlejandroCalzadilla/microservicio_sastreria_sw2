@@ -1,6 +1,6 @@
 package com.accounts.seeder;
 
-
+import com.accounts.order.entities.Garment;
 import com.accounts.purchases.customers.entities.Customer;
 import com.accounts.purchases.customers.entities.Telephone;
 import com.accounts.purchases.customers.repositories.CustomerRepository;
@@ -13,6 +13,12 @@ import com.accounts.purchases.rawmaterial.entities.RawMaterial;
 import com.accounts.purchases.rawmaterial.repositories.RawMaterialRepository;
 import com.accounts.purchases.stores.enities.Store;
 import com.accounts.purchases.stores.repositories.StoreRepository;
+import com.accounts.order.entities.Order;
+import com.accounts.order.entities.OrderItem;
+import com.accounts.order.entities.OrderChange;
+import com.accounts.order.repositories.OrderRepository;
+import com.accounts.order.repositories.OrderChangeRepository;
+import com.accounts.order.repositories.GarmentRepository;
 import net.datafaker.Faker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -23,7 +29,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class DataSeeder implements CommandLineRunner {
@@ -43,11 +49,20 @@ public class DataSeeder implements CommandLineRunner {
     @Autowired
     private NoteRepository noteRepository;
 
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @Autowired
+    private OrderChangeRepository orderChangeRepository;
+
+    @Autowired
+    private GarmentRepository garmentRepository;
+
     @Override
     public void run(String... args) throws Exception {
         Faker faker = new Faker();
 
-        // Crear datos para "Store"
+        // Create data for "Store"
         for (int i = 0; i < 5; i++) {
             Store store = new Store();
             store.setName(faker.company().name());
@@ -55,7 +70,7 @@ public class DataSeeder implements CommandLineRunner {
             storeRepository.save(store);
         }
 
-        // Crear datos para "RawMaterial"
+        // Create data for "RawMaterial"
         for (int i = 0; i < 500; i++) {
             RawMaterial rawMaterial = new RawMaterial();
             rawMaterial.setName(faker.commerce().productName());
@@ -63,21 +78,7 @@ public class DataSeeder implements CommandLineRunner {
             rawMaterialRepository.save(rawMaterial);
         }
 
-        // Crear datos para "Inventory"
-
-
-        List<Store> stores = storeRepository.findAll();
-        List<RawMaterial> rawMaterials = rawMaterialRepository.findAll();
-       /*
-        for (int i = 0; i < 5; i++) {
-            Inventory inventory = new Inventory();
-            inventory.setQuantity(faker.number().numberBetween(10, 100));
-            inventory.setRawMaterialId(rawMaterials.get(faker.number().numberBetween(0, rawMaterials.size())).getId());
-            inventory.setStoreId(stores.get(faker.number().numberBetween(0, stores.size())).getId());
-            inventoryRepository.save(inventory);
-        }*/
-
-        // Crear datos para "Customer" con "Telephone"
+        // Create data for "Customer" with "Telephone"
         for (int i = 0; i < 300; i++) {
             Customer customer = new Customer();
             customer.setFirstName(faker.name().firstName());
@@ -97,14 +98,16 @@ public class DataSeeder implements CommandLineRunner {
             customerRepository.save(customer);
         }
 
-        // Crear datos para "Note" con "DetailNote" y actualizar el inventario
+        // Create data for "Note" with "DetailNote" and update inventory
+        List<Store> stores = storeRepository.findAll();
+        List<RawMaterial> rawMaterials = rawMaterialRepository.findAll();
+
         for (int i = 0; i < 10550; i++) {
             Note note = new Note();
             note.setDate(faker.date().between(
                     Date.from(LocalDate.of(2022, 1, 1).atStartOfDay(ZoneId.systemDefault()).toInstant()),
                     Date.from(LocalDate.of(2024, 12, 31).atStartOfDay(ZoneId.systemDefault()).toInstant())
             ).toString());
-
 
             note.setType(faker.options().option("Type1", "Type2", "Type3"));
             note.setTotalAmount((float) faker.number().randomDouble(2, 100, 1000));
@@ -113,7 +116,6 @@ public class DataSeeder implements CommandLineRunner {
             List<DetailNote> detailNotes = new ArrayList<>();
             for (int j = 0; j < 5; j++) {
                 DetailNote detailNote = new DetailNote();
-                detailNote.setId(UUID.randomUUID().toString());
                 detailNote.setQuantity(faker.number().numberBetween(1, 10));
                 detailNote.setPrice((float) faker.number().randomDouble(2, 10, 100));
                 detailNote.setRawMaterialId(rawMaterials.get(faker.number().numberBetween(0, rawMaterials.size())).getId());
@@ -122,7 +124,7 @@ public class DataSeeder implements CommandLineRunner {
             note.setDetailNotes(detailNotes);
             Note savedNote = noteRepository.save(note);
 
-            // Actualizar el inventario para cada detail note
+            // Update inventory for each detail note
             for (DetailNote detailNote : detailNotes) {
                 Inventory inventory = new Inventory();
                 inventory.setQuantity(detailNote.getQuantity());
@@ -132,6 +134,57 @@ public class DataSeeder implements CommandLineRunner {
             }
         }
 
-        System.out.println("Datos de prueba cargados en la base de datos.");
+        // Create data for "Garment"
+        for (int i = 0; i < 100; i++) {
+            Garment garment = new Garment();
+            garment.setName(faker.commerce().productName());
+            garment.setDescription(faker.lorem().sentence());
+            garment.setBasePrice(faker.number().randomDouble(2, 50, 500));
+            garment.setImage(faker.internet().image());
+            garmentRepository.save(garment);
+        }
+
+        // Create data for "Order" with "OrderItem"
+        List<Customer> customers = customerRepository.findAll();
+        List<Garment> garments = garmentRepository.findAll();
+
+        for (int i = 0; i < 5000; i++) {
+            Order order = new Order();
+            order.setCustomerId(customers.get(faker.number().numberBetween(0, customers.size())).getId());
+            order.setOrderDate(faker.date().between(
+                    Date.from(LocalDate.of(2022, 1, 1).atStartOfDay(ZoneId.systemDefault()).toInstant()),
+                    Date.from(LocalDate.of(2024, 12, 31).atStartOfDay(ZoneId.systemDefault()).toInstant())
+            ));
+            order.setStatus(faker.options().option("pendiente", "en_produccion", "completado", "entregado"));
+            order.setTotalPrice(faker.number().randomDouble(2, 100, 1000));
+
+            List<OrderItem> orderItems = new ArrayList<>();
+            for (int j = 0; j < 5; j++) {
+                OrderItem orderItem = new OrderItem();
+                orderItem.setGarmentId(garments.get(faker.number().numberBetween(0, garments.size())).getId());
+                orderItem.setQuantity(faker.number().numberBetween(1, 10));
+                orderItem.setPrice(faker.number().randomDouble(2, 10, 100));
+                orderItem.setStatus(faker.options().option("pendiente", "en_produccion", "completado", "entregado"));
+                orderItem.setMeasurementData(faker.lorem().sentence());
+                orderItems.add(orderItem);
+            }
+            order.setOrderItems(orderItems);
+            orderRepository.save(order);
+        }
+
+        // Create data for "OrderChange"
+        List<Order> orders = orderRepository.findAll();
+
+        for (int i = 0; i < 500; i++) {
+            OrderChange orderChange = new OrderChange();
+            orderChange.setOrderId(orders.get(faker.number().numberBetween(0, orders.size())).getId());
+            orderChange.setChangeDate(faker.date().past(30, TimeUnit.DAYS));
+            orderChange.setDescription(faker.lorem().sentence());
+            orderChange.setRequestedBy(faker.options().option("cliente", "sastrería"));
+            orderChange.setStatus(faker.options().option("pendiente", "completado"));
+            orderChangeRepository.save(orderChange);
+        }
+
+        System.out.println("Test data loaded into the database.");
     }
 }

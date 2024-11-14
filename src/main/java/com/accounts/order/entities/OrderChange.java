@@ -8,7 +8,7 @@ import java.util.Date;
 public class OrderChange {
     @Id
     private String id;
-    private String orderItemId; // Relación con OrderItem
+    private String orderId; // Relación con OrderItem
     private Date changeDate;
     private String description; // Descripción del cambio
     private String requestedBy; // Ej: cliente o sastrería
@@ -22,12 +22,12 @@ public class OrderChange {
         this.id = id;
     }
 
-    public String getOrderItemId() {
-        return orderItemId;
+    public String getOrderId() {
+        return orderId;
     }
 
-    public void setOrderItemId(String orderItemId) {
-        this.orderItemId = orderItemId;
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
     }
 
     public Date getChangeDate() {

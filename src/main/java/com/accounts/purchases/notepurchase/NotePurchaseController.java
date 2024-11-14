@@ -1,6 +1,5 @@
 package com.accounts.purchases.notepurchase;
 
-import com.accounts.purchases.inventories.InventoryService;
 import com.accounts.purchases.inventories.entities.Inventory;
 import com.accounts.purchases.inventories.repositories.InventoryRepository;
 import com.accounts.purchases.notepurchase.entities.DetailNote;
@@ -18,13 +17,9 @@ import org.springframework.stereotype.Controller;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
-
 
 @Controller
 public class NotePurchaseController {
-
-
 
     @Autowired
     private StoreRepository storeRepository;
@@ -45,16 +40,10 @@ public class NotePurchaseController {
         return new PaginatedResponse<>(paginatedNotes, total);
     }
 
-
     @QueryMapping
     public Note findNoteById(@Argument String id) {
         return noteRepository.findById(id).orElse(null);
     }
-
-
-
-
-
 
     @MutationMapping
     public Note createNote(@Argument String date, @Argument String type, @Argument Float totalAmount, @Argument List<DetailNote> detailNotes, @Argument String storeId) {
@@ -63,24 +52,15 @@ public class NotePurchaseController {
             throw new IllegalArgumentException("Store not found with id: " + storeId);
         }
 
-        // Crear y guardar la Note
         Note note = new Note();
         note.setDate(date);
         note.setType(type);
         note.setTotalAmount(totalAmount);
         note.setStoreId(storeId);
-
-        // Asegurarse de que cada DetailNote tenga un id
-        for (DetailNote detailNote : detailNotes) {
-            if (detailNote.getId() == null) {
-                detailNote.setId(UUID.randomUUID().toString());
-            }
-        }
         note.setDetailNotes(detailNotes);
 
         Note savedNote = noteRepository.save(note);
 
-        // Actualizar el inventario para cada detail note
         for (DetailNote detailNote : detailNotes) {
             Inventory inventory = new Inventory();
             inventory.setQuantity(detailNote.getQuantity());
@@ -92,26 +72,22 @@ public class NotePurchaseController {
     }
 
     @MutationMapping
-    public Note updateNote(@Argument String id,@Argument String date, @Argument String type, @Argument Float totalAmount,@Argument List<DetailNote> detailNotes) {
-        Optional<Note> optionalCustomer = noteRepository.findById(id);
-        if (optionalCustomer.isPresent()) {
-            Note customer = optionalCustomer.get();
-            if (date != null) customer.setDate(date);
-            if (type != null) customer.setType(type);
-            if (totalAmount != null) customer.setTotalAmount(totalAmount);
-            if (detailNotes != null) customer.setDetailNotes(detailNotes);
-            return noteRepository.save(customer);
+    public Note updateNote(@Argument String id, @Argument String date, @Argument String type, @Argument Float totalAmount, @Argument List<DetailNote> detailNotes) {
+        Optional<Note> optionalNote = noteRepository.findById(id);
+        if (optionalNote.isPresent()) {
+            Note note = optionalNote.get();
+            if (date != null) note.setDate(date);
+            if (type != null) note.setType(type);
+            if (totalAmount != null) note.setTotalAmount(totalAmount);
+            if (detailNotes != null) note.setDetailNotes(detailNotes);
+            return noteRepository.save(note);
         }
         return null;
     }
 
-
-
-
-
     @MutationMapping
     public String deleteNote(@Argument String id) {
         noteRepository.deleteById(id);
-        return "Customer deleted successfully";
+        return "Note deleted successfully";
     }
 }

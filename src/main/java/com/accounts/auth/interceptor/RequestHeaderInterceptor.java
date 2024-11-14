@@ -9,14 +9,6 @@ import org.springframework.graphql.server.WebGraphQlResponse;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
-
-/*
-* es para cuando te equivocas de contra o usuario
-*
-* */
-
-
-
 @Component
 @Slf4j
 public class RequestHeaderInterceptor implements WebGraphQlInterceptor {
@@ -26,7 +18,8 @@ public class RequestHeaderInterceptor implements WebGraphQlInterceptor {
 
     @Override
     public Mono<WebGraphQlResponse> intercept(WebGraphQlRequest request, Chain chain) {
-        if (request.getDocument().contains("query") && (request.getDocument().contains("login") || request.getDocument().contains("register"))) {
+        if ((request.getDocument().contains("mutation") && (request.getDocument().contains("login") || request.getDocument().contains("register"))) ||
+                (request.getDocument().contains("query") && request.getDocument().contains("login"))) {
             return chain.next(request);
         } else {
             String bearerToken = request.getHeaders().getFirst("Authorization");

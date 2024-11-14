@@ -63,8 +63,8 @@ type Mutation {
     deleteGarment(id: ID!): Boolean!
 
 
-    createOrderChange(orderItemId: ID!, changeDate: String!, description: String, requestedBy: String, status: String!): OrderChange!
-    updateOrderChange(id: ID!, orderItemId: ID, changeDate: String, description: String, requestedBy: String, status: String): OrderChange!
+    createOrderChange(orderId: ID!, changeDate: String!, description: String, requestedBy: String, status: String!): OrderChange!
+    updateOrderChange(id: ID!, orderId: ID, changeDate: String, description: String, requestedBy: String, status: String): OrderChange!
     deleteOrderChange(id: ID!): Boolean!
 }
 
@@ -119,7 +119,7 @@ type Garment {
 
 type OrderChange {
     id: ID!
-    orderItemId: OrderItem!
+    orderId: ID!
     changeDate: String!
     description: String
     requestedBy: String
@@ -184,7 +184,6 @@ type Telephone {
 }
 
 type DetailNote {
-    id: ID
     quantity: Int
     price: Float
     rawMaterialId: ID!

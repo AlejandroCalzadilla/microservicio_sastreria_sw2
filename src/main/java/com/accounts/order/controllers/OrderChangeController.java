@@ -26,7 +26,7 @@ public class OrderChangeController {
     @MutationMapping
     public OrderChange createOrderChange(String orderItemId, String changeDate, String description, String requestedBy, String status) {
         OrderChange orderChange = new OrderChange();
-        orderChange.setOrderItemId(orderItemId);
+        orderChange.setOrderId(orderItemId);
         orderChange.setChangeDate(new Date(changeDate));
         orderChange.setDescription(description);
         orderChange.setRequestedBy(requestedBy);
@@ -39,7 +39,7 @@ public class OrderChangeController {
         OrderChange orderChange = orderChangeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("OrderChange not found with ID: " + id));
 
-        if (orderItemId != null) orderChange.setOrderItemId(orderItemId);
+        if (orderItemId != null) orderChange.setOrderId(orderItemId);
         if (changeDate != null) orderChange.setChangeDate(new Date(changeDate));
         if (description != null) orderChange.setDescription(description);
         if (requestedBy != null) orderChange.setRequestedBy(requestedBy);

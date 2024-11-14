@@ -13,7 +13,6 @@ public class Note {
     private String date;
     private String type;
     private Float totalAmount;
-    @DBRef
     private List<DetailNote> detailNotes;
     private String storeId;
 
