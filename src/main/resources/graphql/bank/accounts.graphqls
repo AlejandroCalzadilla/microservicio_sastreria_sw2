@@ -1,8 +1,9 @@
 type Query {
     login(email: String!, password: String!): AuthPayload
+    getCustomerByUserId(userid: ID!): Cliente
 
-    findAllCustomers: [Customer]
-    findCustomerById(id: ID!): Customer
+    findAllCliente: [Cliente]
+    findClienteById(id: ID!): Cliente
 
     findAllRawMaterials(limit: Int, offset: Int): PaginatedRawMaterials!
     findRawMaterialById(id: ID!): RawMaterial
@@ -20,23 +21,28 @@ type Query {
     getGarment(id: ID!): Garment!
 
 
-    getOrder(id: ID!): Order!
-    getOrders(limit: Int!, offset: Int!): PaginatedOrders!
+    findByIdPedido(id: ID!): Pedido!
+    findAllPedido(limit: Int!, offset: Int!): PaginatedOrders!
+    getOrdersByCustomer(customerId: ID!): [Pedido]!
     #getOrderItem(id: ID!): OrderItem
 
 
 }
 
 type Mutation {
-    register(username: String!, email: String!, password: String!): User
+
+
+    register(username: String!, email: String!, password: String!,): User
+    registerCliente(username: String!, email: String!, password: String!,firstName: String!, lastName: String!, ci: String!, birthDate: String!, sex: String!, telephones: [TelephoneInput]!): User
+
 
     createStore(name: String!, address: String!): Store
     updateStore(id: ID!, name: String, address: String): Store
     deleteStore(id: ID!): String
 
-    createCustomer(firstName: String!, lastName: String!, ci: String!, birthDate: String!, sex: String!, telephones: [TelephoneInput]!): Customer
-    updateCustomer(id: ID!, firstName: String, lastName: String, ci: String, birthDate: String, sex: String, telephones: [TelephoneInput]): Customer
-    deleteCustomer(id: ID!): String
+    createCliente(cliente: ClienteInput): Cliente
+    updateCliente(id: ID!,cliente: ClienteInput): Cliente
+    deleteCliente(id: ID!): String
 
     createRawMaterial(name: String!, unit: String!): RawMaterial
     updateRawMaterial(id: ID!, name: String, unit: String): RawMaterial
@@ -50,61 +56,74 @@ type Mutation {
     updateInventory(id: ID!, quantity: Int, rawMaterialId: ID, storeId: ID): Inventory
     deleteInventory(id: ID!): String
 
-    createOrder(customerId: ID!, orderDate: String!, status: String!, totalPrice: Float, items: [OrderItemInput]!): Order!
-    updateOrder(id: ID!, customerId: ID, orderDate: String, status: String, totalPrice: Float, items: [OrderItemInput]): Order!
-    deleteOrder(id: ID!): Boolean!
+
+    createPedido(pedido: PedidoInput!): Pedido!
+    #crearPedido(customerId: ID!, orderDate: String!, status: String!, totalPrice: Float, items: [OrderItemInput]!): Order!
+    updatePedido(id: ID!,pedido: PedidoInput!): Pedido!
+    deletePedido(id: ID!): String!
 
     #createOrderItem(orderId: ID!, garmentId: ID!, quantity: Int!, price: Float!, status: String, images: [String]!): OrderItem!
     #updateOrderItem(id: ID!, orderId: ID, garmentId: ID, quantity: Int, price: Float, status: String, images: [String]): OrderItem!
     #deleteOrderItem(id: ID!): Boolean!
 
-    createGarment(name: String!, description: String, basePrice: Float!, image: String!): Garment!
-    updateGarment(id: ID!, name: String, description: String, basePrice: Float, image: String!): Garment!
+    createGarment(name: String!, description: String, basePrice: Float!, image: String!, stock: Int): Garment!
+    updateGarment(id: ID!, name: String, description: String, basePrice: Float, image: String!, stock: Int): Garment!
     deleteGarment(id: ID!): Boolean!
 
 
     createOrderChange(orderId: ID!, changeDate: String!, description: String, requestedBy: String, status: String!): OrderChange!
     updateOrderChange(id: ID!, orderId: ID, changeDate: String, description: String, requestedBy: String, status: String): OrderChange!
     deleteOrderChange(id: ID!): Boolean!
+
+
+
+    seedData: String
 }
 
 
 type PaginatedOrders {
-    items: [Order]!
+    items: [Pedido]!
     total: Int!
 }
 
 
 
-type Order {
+type Pedido {
     id: ID!
     customerId: ID!
     orderDate: String!
     status: String!
     totalPrice: Float
+    creadoen: String
+    actualizadoen: String
     orderItems: [OrderItem]!
 }
 
 
 
+input PedidoInput {
+    customerId: ID!
+    orderDate: String!
+    status: String!
+    totalPrice: Float
+    orderItems: [OrderItemInput]!
+}
+
+
 
 
 type OrderItem {
-    garmentId: ID!
     quantity: Int!
     price: Float!
-    status: String
-
-    measurementData: String
+    descripcion: String
+    image:String
 }
 
 input OrderItemInput {
-    garmentId: ID!
     quantity: Int!
     price: Float!
-    status: String
-
-    measurementData: String
+    descripcion: String
+    image:String
 }
 
 type Garment {
@@ -112,6 +131,7 @@ type Garment {
     name: String!
     description: String
     basePrice: Float!
+    stock: Int
     image: String
 }
 
@@ -136,6 +156,7 @@ type User {
     username: String!
     email: String!
     password: String!
+    userid: ID!
 }
 
 type PaginatedRawMaterials {
@@ -168,7 +189,7 @@ type Store {
     address: String
 }
 
-type Customer {
+type Cliente {
     id: ID
     firstName: String
     lastName: String
@@ -176,7 +197,21 @@ type Customer {
     birthDate: String
     sex: String
     telephones: [Telephone]
+    userid:String
 }
+
+input  ClienteInput {
+    firstName: String
+    lastName: String
+    ci: String
+    sex: String
+    birthDate: String
+    telephones: [TelephoneInput]
+}
+
+
+
+
 
 type Telephone {
     number: String

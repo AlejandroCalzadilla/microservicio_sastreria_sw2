@@ -1,6 +1,6 @@
 package com.accounts.order.controllers;
 
-import com.accounts.order.entities.OrderChange;
+import com.accounts.pedido.modelos.OrderChange;
 import com.accounts.order.repositories.OrderChangeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
