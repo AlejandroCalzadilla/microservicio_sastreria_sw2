@@ -1,6 +1,6 @@
 package com.accounts.order.controllers;
 
-import com.accounts.Imagenes.FileStorageService;
+import com.accounts.imagenes.FileStorageService;
 import com.accounts.order.entities.Garment;
 import com.accounts.order.repositories.GarmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,9 +8,7 @@ import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
