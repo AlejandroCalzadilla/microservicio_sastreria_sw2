@@ -10,8 +10,17 @@ public class Garment {
     private String name;
     private String description;
     private Double basePrice;
+    private int stock;
     private String image;
     // Getters y Setters
+
+    public int getStock() {
+        return stock;
+    }
+
+    public void setStock(int stock) {
+        this.stock = stock;
+    }
 
     public String getId() {
         return id;

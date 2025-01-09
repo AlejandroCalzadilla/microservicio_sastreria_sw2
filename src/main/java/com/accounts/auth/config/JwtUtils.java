@@ -42,6 +42,7 @@ public class JwtUtils {
 
     public String generateTokenFromUsername(UserDetails userDetails) {
         String username = userDetails.getUsername();
+        System.out.println("aver llega la expiracion"+jwtExpirationMs);
         return Jwts.builder()
                 .subject(username)
                 .issuedAt(new Date())
@@ -67,7 +68,7 @@ public class JwtUtils {
         Key key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
         SignatureAlgorithm algorithm = SignatureAlgorithm.HS512;
         Instant now = Instant.now();
-        Date expiryDate = Date.from(now.plus(10, ChronoUnit.MINUTES));  // Token valid for 1 hour
+        Date expiryDate = Date.from(now.plus(30, ChronoUnit.MINUTES));  // Token valid for 1 hour
 
         String jwt = Jwts.builder()
                 .setSubject(appUser)
@@ -98,7 +99,7 @@ public class JwtUtils {
         } catch (MalformedJwtException e) {
             logger.error("Invalid JWT token: {}", e.getMessage());
         } catch (ExpiredJwtException e) {
-            logger.error("JWT token is expired: {}", e.getMessage());
+            logger.error("JWT token esta expirado: {}", e.getMessage());
         } catch (UnsupportedJwtException e) {
             logger.error("JWT token is unsupported: {}", e.getMessage());
         } catch (IllegalArgumentException e) {
